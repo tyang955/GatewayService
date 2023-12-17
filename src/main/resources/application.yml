@@ -1,0 +1,42 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: employees-service
+          uri: lb://employees-service  # Replace with your microservice's Eureka name
+          predicates:
+            - Path=/employees/**  # Define your routing path
+        - id: employee-service
+          uri: lb://employee-service  # Replace with your microservice's Eureka name
+          predicates:
+            - Path=/employee/**  # Define your routing path
+        - id: email-service
+          uri: lb://email-service  # Replace with your microservice's Eureka name
+          predicates:
+            - Path=/email/**  # Define your routing path
+      default-filters:
+        - name: RequestSize
+          args:
+            maxSize: 5000  # setting a maximum request size
+
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8100/eureka  # URL of your Eureka server
+
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.cloud.loadbalancer: DEBUG
